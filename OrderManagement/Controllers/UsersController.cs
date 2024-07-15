@@ -1,10 +1,12 @@
 ﻿using Core.Services.Contract;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using OrderManagement.Dtos;
 using OrderManagement.Entities;
 using OrderManagement.Errors;
+using System.Security.Claims;
 
 namespace OrderManagement.Controllers
 {
@@ -24,6 +26,8 @@ namespace OrderManagement.Controllers
             _authService = authService;
         }
 
+        [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status401Unauthorized)]
         [HttpPost("login")] // POST: /api/users/login
         public async Task<ActionResult<UserDto>> Login([FromBody] LoginDto model)
         {
@@ -44,8 +48,14 @@ namespace OrderManagement.Controllers
                 Token = await _authService.CreateTokenAsync(user, _userManager)
             });
         }
-
-        [HttpPost("register")]
+        /// <summary>
+        /// end point to register user as an admin
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
+        [HttpPost("register")] 
         public async Task<ActionResult<UserDto>> Register([FromBody] RegisterDto model)
         {
             var user = await _userManager.FindByEmailAsync(model.Email);
@@ -65,10 +75,30 @@ namespace OrderManagement.Controllers
             if (!result.Succeeded)
                 return BadRequest(new ApiResponse(400));
 
+            result = await _userManager.AddToRoleAsync(user, "Admin");
+
+            if (!result.Succeeded)
+                return BadRequest(new ApiResponse(400));
+
             return Ok(new UserDto
             {
                 Email = user.Email,
                 Name = model.Name,
+                Token = await _authService.CreateTokenAsync(user, _userManager)
+            });
+        }
+
+        [Authorize]
+        [HttpGet("current")]
+        public async Task<ActionResult<UserDto>> GetUser()
+        {
+            var email = User.FindFirstValue("email");
+            var user = await _userManager.FindByEmailAsync(email);
+
+            return Ok(new UserDto
+            {
+                Email = email,
+                Name = user.Name,
                 Token = await _authService.CreateTokenAsync(user, _userManager)
             });
         }

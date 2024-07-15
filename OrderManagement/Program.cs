@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 using OrderManagement.DbContexts;
 using OrderManagement.Entities;
 using OrderManagement.Errors;
+using OrderManagement.Extensions;
 using OrderManagement.Helper;
 using OrderManagement.Middlewares;
 
@@ -20,7 +22,9 @@ namespace OrderManagement
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+
+            // builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerDocumentation();
 
             #region Connection & Identity Configurations
             builder.Services.AddDbContext<StoreDbContext>(options =>
@@ -31,8 +35,9 @@ namespace OrderManagement
             builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
             {
 
-            }).AddEntityFrameworkStores<StoreDbContext>()
-            .AddDefaultTokenProviders();
+            }).AddEntityFrameworkStores<StoreDbContext>();
+
+            builder.Services.AddIdentityService(builder.Configuration);
             #endregion
 
             builder.Services.AddServices();
