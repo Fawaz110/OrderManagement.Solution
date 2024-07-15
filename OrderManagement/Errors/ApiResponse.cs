@@ -13,6 +13,7 @@
         private string GetMessageByCodeAsync(int statusCode)
             => statusCode switch
             {
+                200 => "success",
                 400 => "Bad Request",
                 401 => "Unauthorized Access",
                 404 => "Not Found Resources",

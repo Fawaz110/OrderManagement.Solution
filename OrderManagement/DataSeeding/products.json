@@ -1,0 +1,52 @@
+[
+  {
+    "Name": "Italian Chicken Marinade",
+    "Price": 200,
+    "Stock": 50
+  },
+  {
+    "Name": "Chicken Marsala",
+    "Price": 150,
+    "Stock": 20
+  },
+  {
+    "Name": "Hearty Vegetable Lasagna",
+    "Price": 180,
+    "Stock": 100
+  },
+  {
+    "Name": "Cheesy Vegetable Lasagna",
+    "Price": 300,
+    "Stock": 120
+  },
+  {
+    "Name": "Pasta Salad",
+    "Price": 250,
+    "Stock": 23
+  },
+  {
+    "Name": "Italian Wedding Soup",
+    "Price": 120,
+    "Stock": 80
+  },
+  {
+    "Name": "Vegetarian Refried Beans",
+    "Price": 10,
+    "Stock": 10
+  },
+  {
+    "Name": "Sweet and Spicy Sausage and Pepper Pasta",
+    "Price": 8,
+    "Stock": 4
+  },
+  {
+    "Name": "Creamy Gochujang Tortellini",
+    "Price": 15,
+    "Stock": 12
+  },
+  {
+    "Name": "Shrimp Egg Foo Young",
+    "Price": 18,
+    "Stock": 40
+  }
+]

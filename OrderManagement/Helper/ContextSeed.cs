@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Core.Entities;
+using Microsoft.AspNetCore.Identity;
+using OrderManagement.DbContexts;
 using OrderManagement.Entities;
+using System.Text.Json;
 
 namespace OrderManagement.Helper
 {
@@ -64,6 +67,25 @@ namespace OrderManagement.Helper
             }
             else
                 logger.LogInformation("No Need For Users Seeding");
+        }
+
+        public async static Task ApplyProductSeeding(StoreDbContext context, ILogger logger)
+        {
+            if (!context.Products.Any())
+            {
+                var productData = File.ReadAllText("../OrderManagement/DataSeeding/products.json");
+                var products = JsonSerializer.Deserialize<List<Product>>(productData);
+
+                if (products?.Count() > 0)
+                {
+                    foreach (var product in products)
+                        await context.Set<Product>().AddAsync(product);
+
+                    await context.SaveChangesAsync();
+                }
+            }
+            else
+                logger.LogInformation("No Need For Product Seeding<3");
         }
     }
 }

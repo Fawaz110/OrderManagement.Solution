@@ -1,6 +1,8 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using OrderManagement.DbContexts;
 using OrderManagement.Entities;
@@ -8,6 +10,7 @@ using OrderManagement.Errors;
 using OrderManagement.Extensions;
 using OrderManagement.Helper;
 using OrderManagement.Middlewares;
+using System.Text;
 
 namespace OrderManagement
 {
@@ -83,7 +86,10 @@ namespace OrderManagement
 
                 await ContextSeed.ApplyUserSeeding(userManager, logger);
 
-            }catch (Exception ex)
+                await ContextSeed.ApplyProductSeeding(context, logger);
+
+            }
+            catch (Exception ex)
             {
                 logger.LogWarning("No Pending Migrations");
             }
