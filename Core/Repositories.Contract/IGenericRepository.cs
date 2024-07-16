@@ -1,4 +1,5 @@
 ﻿using Core.Entities;
+using Core.Specifications;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,9 @@ namespace Core.Repositories.Contract
         void Update(TEntity entity);
         void Delete(TEntity entity);
         Task<IEnumerable<TEntity>> GetAllAsync();
+        Task<IEnumerable<TEntity>> GetAllWithSpecAsync(ISpecifications<TEntity> spec);
         Task<TEntity> GetByIdAsync(int id);
+        Task<TEntity> GetWithSpecAsync(ISpecifications<TEntity> spec);
         Task<int> CompleteAsync();
 
     }
