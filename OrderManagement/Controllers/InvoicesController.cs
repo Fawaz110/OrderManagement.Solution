@@ -1,5 +1,6 @@
 ﻿using Core.Entities;
 using Core.Repositories.Contract;
+using Core.Specifications.InvoiceSpecifications;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OrderManagement.Errors;
@@ -19,7 +20,9 @@ namespace OrderManagement.Controllers
         [HttpGet("{invoiceId}")]
         public async Task<ActionResult<Invoice>> GetById(int invoiceId)
         {
-            var invoice = await _invoiceRepository.GetByIdAsync(invoiceId);
+            var spec = new InvoiceWithOrderSpecifications(invoiceId);
+
+            var invoice = await _invoiceRepository.GetWithSpecAsync(spec);
 
             if (invoice is null)
                 return NotFound(new ApiResponse(404));
@@ -30,7 +33,9 @@ namespace OrderManagement.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Invoice>>> GetAll()
         {
-            var invoices = await _invoiceRepository.GetAllAsync();
+            var spec = new InvoiceWithOrderSpecifications();
+
+            var invoices = await _invoiceRepository.GetAllWithSpecAsync(spec);
 
             if (!invoices.Any())
                 return NotFound(new ApiResponse(404));

@@ -12,6 +12,7 @@ namespace Core.Specifications
     {
         public Expression<Func<TEntity, bool>> Criteria { get; set; }
         public List<Expression<Func<TEntity, object>>> Includes { get; set; } = new List<Expression<Func<TEntity, object>>>();
+
         public BaseSpecifications()
         {
 

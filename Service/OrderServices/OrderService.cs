@@ -3,6 +3,7 @@ using Core.Entities.Order.Aggregate;
 using Core.Entities.OrderAggregate;
 using Core.Repositories.Contract;
 using Core.Services.Contract;
+using Core.Specifications.OrderSpeicifcations;
 using Microsoft.AspNetCore.Identity;
 using OrderManagement.Entities;
 using System;
@@ -17,20 +18,23 @@ namespace Service.OrderServices
     {
         private readonly IGenericRepository<Order> _orderRepository;
         private readonly IGenericRepository<Product> _productRepository;
+        private readonly IGenericRepository<Invoice> _invoiceRepository;
         private readonly UserManager<AppUser> _userManager;
 
         public OrderService(
             IGenericRepository<Order> orderRepository,
             IGenericRepository<Product> productRepository,
+            IGenericRepository<Invoice> invoiceRepository,
             UserManager<AppUser> userManager) 
         {
             _orderRepository = orderRepository;
             _productRepository = productRepository;
+            _invoiceRepository = invoiceRepository;
             _userManager = userManager;
         }
         public async Task<Order> CreateOrderAsync(string buyerEmail, List<OrderItem> orderItems, PaymentMethod paymentMethod, OrderStatus status)
         {
-            // 1. Get User By Email TO Send his Id
+            // 1. Get User By Email To Send his Id
             var user = await _userManager.FindByEmailAsync(buyerEmail);
 
             if (user is null)
@@ -63,10 +67,10 @@ namespace Service.OrderServices
 
             var total = itemsToAdd.Sum(o => o.UnitPrice * o.Quantity);
 
-            if (total > 100)
-                total = total * 0.95m;
-            else if (total > 200)
+            if (total > 200)
                 total = total * 0.9m;
+            else if (total > 100)
+                total = total * 0.95m;
 
 
             // 3. Add & SaveChanges
@@ -89,19 +93,44 @@ namespace Service.OrderServices
 
             // [TODO] add invoice here
 
+            var invoice = new Invoice
+            {
+                OrderId = order.Id,
+                TotalAmount = order.TotalAmount,
+            };
+
+            await _invoiceRepository.AddAsync(invoice);
+
+            result = await _invoiceRepository.CompleteAsync();
+
+            if (result <= 0)
+                return null;
+
             return order;
         }
 
         public async Task<IEnumerable<Order>> GetAllAsync()
             => await _orderRepository.GetAllAsync();
 
-        public Task<IEnumerable<Order>> GetAllOrdersForUserAsync(string buyerEmail)
+        public async Task<IEnumerable<Order>> GetAllOrdersForUserAsync(string customerId)
         {
-            throw new NotImplementedException();
+            var spec = new OrderWithItemsSpeicifcations();
+
+            var result = await _orderRepository.GetAllWithSpecAsync(spec);
+
+            var orders = result.Where(O => O.CustomerId == customerId).ToList();
+
+            return orders;
         }
+
+        public async Task<IEnumerable<Order>> GetAllWithSpecAsync(OrderWithItemsSpeicifcations spec)
+            => await _orderRepository.GetAllWithSpecAsync(spec);
 
         public async Task<Order> GetByIdAsync(int id)
             => await _orderRepository.GetByIdAsync(id);
+
+        public async Task<Order> GetWithSpecAsync(OrderWithItemsSpeicifcations spec)
+            => await _orderRepository.GetWithSpecAsync(spec);
 
         public async Task<Order> UpdateStatusAsync(int orderId, OrderStatus status)
         {

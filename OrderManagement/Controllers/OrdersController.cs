@@ -1,5 +1,6 @@
 ﻿using Core.Entities.Order.Aggregate;
 using Core.Services.Contract;
+using Core.Specifications.OrderSpeicifcations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -49,7 +50,9 @@ namespace OrderManagement.Controllers
         [HttpGet] // GET: /api/orders
         public async Task<ActionResult<IEnumerable<Order>>> GetAll()
         {
-            var orders = await _orderService.GetAllAsync();
+            var spec = new OrderWithItemsSpeicifcations();
+
+            var orders = await _orderService.GetAllWithSpecAsync(spec);
 
             if (!orders.Any())
                 return NotFound(new ApiResponse(404));
@@ -62,7 +65,9 @@ namespace OrderManagement.Controllers
         [HttpGet("{orderId}")] // GET: /api/orders/{orderId}
         public async Task<ActionResult<IEnumerable<Order>>> GetById(int orderId)
         {
-            var order = await _orderService.GetByIdAsync(orderId);
+            var spec = new OrderWithItemsSpeicifcations(orderId);
+
+            var order = await _orderService.GetWithSpecAsync(spec);
 
             if (order is null)
                 return NotFound(new ApiResponse(404));
