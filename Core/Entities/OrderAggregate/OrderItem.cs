@@ -14,10 +14,9 @@ namespace Core.Entities.Order.Aggregate
             
         }
 
-        public OrderItem(ProductOrderItem product, int orderId, int quantity, decimal unitPrice)
+        public OrderItem(ProductOrderItem product, int quantity, decimal unitPrice)
         {
             Product = product;
-            OrderId = orderId;
             Quantity = quantity;
             UnitPrice = unitPrice;
         }

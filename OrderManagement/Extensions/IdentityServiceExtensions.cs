@@ -11,6 +11,12 @@ namespace OrderManagement.Extensions
     {
         public static IServiceCollection AddIdentityService(this IServiceCollection services, IConfiguration configuration)
         {
+
+            services.AddIdentity<AppUser, IdentityRole>(options =>
+            {
+
+            }).AddEntityFrameworkStores<StoreDbContext>();
+
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
@@ -20,7 +26,7 @@ namespace OrderManagement.Extensions
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:SecretKey"])),
                         ValidateIssuer = true,
                         ValidIssuer = configuration["JWT:Issuer"],
-                        ValidateAudience = false
+                        ValidateAudience = false,
                     };
                 });
 

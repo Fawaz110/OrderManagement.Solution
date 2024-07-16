@@ -6,7 +6,7 @@ namespace Core.Entities.Order.Aggregate
     {
         public string CustomerId { get; set; }
         public AppUser? Customer { get; set; }
-        public DateTime OrderDate { get; set; }
+        public DateTime OrderDate { get; set; } = DateTime.UtcNow;
         public decimal TotalAmount { get; set; }
         public OrderStatus Status { get; set; }
         public PaymentMethod PaymentMethod { get; set; }

@@ -3,6 +3,7 @@ using Core.Services.Contract;
 using OrderManagement.Entities;
 using Repository;
 using Service;
+using Service.OrderServices;
 using Service.Profiles;
 
 namespace OrderManagement.Extensions
@@ -13,6 +14,7 @@ namespace OrderManagement.Extensions
         {
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IOrderService, OrderService>();
 
             services.AddAutoMapper(x => x.AddProfile(new ProductProfile()));
 

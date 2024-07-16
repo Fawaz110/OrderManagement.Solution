@@ -35,12 +35,8 @@ namespace OrderManagement
                     options.UseSqlServer(builder.Configuration.GetConnectionString("Default"));
                 });
 
-            builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
-            {
-
-            }).AddEntityFrameworkStores<StoreDbContext>();
-
             builder.Services.AddIdentityService(builder.Configuration);
+            
             #endregion
 
             builder.Services.AddServices();
