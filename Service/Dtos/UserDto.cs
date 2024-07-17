@@ -1,4 +1,4 @@
-﻿namespace OrderManagement.Dtos
+﻿namespace Service.Dtos
 {
     public class UserDto
     {

@@ -18,18 +18,15 @@ namespace Service.OrderServices
     {
         private readonly IGenericRepository<Order> _orderRepository;
         private readonly IGenericRepository<Product> _productRepository;
-        private readonly IGenericRepository<Invoice> _invoiceRepository;
         private readonly UserManager<AppUser> _userManager;
 
         public OrderService(
             IGenericRepository<Order> orderRepository,
             IGenericRepository<Product> productRepository,
-            IGenericRepository<Invoice> invoiceRepository,
             UserManager<AppUser> userManager) 
         {
             _orderRepository = orderRepository;
             _productRepository = productRepository;
-            _invoiceRepository = invoiceRepository;
             _userManager = userManager;
         }
         public async Task<Order> CreateOrderAsync(string buyerEmail, List<OrderItem> orderItems, PaymentMethod paymentMethod, OrderStatus status)
@@ -50,8 +47,9 @@ namespace Service.OrderServices
                 {
                     var product = await _productRepository.GetByIdAsync(item.Product.ProductId);
 
-                    if(product is not null)
+                    if(product is not null && product.Stock >= item.Quantity)
                     {
+                        product.Stock -= item.Quantity;
                         var prodItemOrdered = new ProductOrderItem
                         {
                             ProductId = product.Id,
@@ -91,16 +89,6 @@ namespace Service.OrderServices
                 return null;
 
             // [TODO] add invoice here
-
-            var invoice = new Invoice
-            {
-                OrderId = order.Id,
-                TotalAmount = order.TotalAmount,
-            };
-
-            await _invoiceRepository.AddAsync(invoice);
-
-            result = await _invoiceRepository.CompleteAsync();
 
             if (result <= 0)
                 return null;

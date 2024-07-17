@@ -1,10 +1,9 @@
 ﻿using AutoMapper;
 using Core.Entities;
 using Core.Repositories.Contract;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OrderManagement.Errors;
-using Service.ProductServices;
+using Service.Dtos;
 
 namespace OrderManagement.Controllers
 {

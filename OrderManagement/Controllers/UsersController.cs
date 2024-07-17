@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using OrderManagement.Dtos;
 using OrderManagement.Entities;
 using OrderManagement.Errors;
+using Service.Dtos;
 using System.Security.Claims;
 
 namespace OrderManagement.Controllers

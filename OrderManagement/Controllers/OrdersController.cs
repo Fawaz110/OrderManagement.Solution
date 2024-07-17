@@ -1,13 +1,12 @@
-﻿using Core.Entities.Order.Aggregate;
+﻿using AutoMapper;
+using Core.Entities.Order.Aggregate;
 using Core.Services.Contract;
 using Core.Specifications.OrderSpeicifcations;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using OrderManagement.Dtos;
 using OrderManagement.Entities;
 using OrderManagement.Errors;
-using System.Net;
+using Service.Dtos.OrderDtos;
 
 namespace OrderManagement.Controllers
 {
@@ -15,13 +14,16 @@ namespace OrderManagement.Controllers
     {
         private readonly IOrderService _orderService;
         private readonly UserManager<AppUser> _userManager;
+        private readonly IMapper _mapper;
 
         public OrdersController(
             IOrderService orderService,
-            UserManager<AppUser> userManager)
+            UserManager<AppUser> userManager,
+            IMapper mapper)
         {
             _orderService = orderService;
             _userManager = userManager;
+            _mapper = mapper;
         }
 
         [HttpPost] // POST: /api/orders
@@ -37,7 +39,9 @@ namespace OrderManagement.Controllers
             if (!isCustomer)
                 return BadRequest(new ApiResponse(400));
 
-            var order = await _orderService.CreateOrderAsync(model.buyerEmail, model.Items, model.PaymentMethod, model.OrderStatus);
+            var items = _mapper.Map<List<OrderItem>>(model.Items);
+
+            var order = await _orderService.CreateOrderAsync(model.buyerEmail, items, model.PaymentMethod, model.OrderStatus);
 
             if (order is null)
                 return BadRequest(new ApiResponse(400, "an error occured during adding order"));

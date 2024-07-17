@@ -2,7 +2,7 @@
 using OrderManagement.Entities;
 using System.ComponentModel.DataAnnotations;
 
-namespace OrderManagement.Dtos
+namespace Service.Dtos.OrderDtos
 {
     public class OrderDto
     {
@@ -14,8 +14,8 @@ namespace OrderManagement.Dtos
         public PaymentMethod PaymentMethod { get; set; }
         [Required]
         [Range(0, 2, ErrorMessage = "Status must be: 0 for Pending, 1 for PaymentSucceded and 2 for PaymentFailed")]
-        public OrderStatus OrderStatus { get; set; } 
+        public OrderStatus OrderStatus { get; set; }
         [Required]
-        public List<OrderItem> Items { get; set; }
+        public List<OrderItemDto> Items { get; set; }
     }
 }
