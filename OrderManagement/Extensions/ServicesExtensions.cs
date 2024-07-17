@@ -15,6 +15,7 @@ namespace OrderManagement.Extensions
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IOrderService, OrderService>();
+            services.AddScoped<IPaymentService, PaymentService>();
 
             services.AddAutoMapper(x => x.AddProfile(new ProductProfile()));
 

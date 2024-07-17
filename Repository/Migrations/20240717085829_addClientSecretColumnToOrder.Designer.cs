@@ -12,8 +12,8 @@ using OrderManagement.DbContexts;
 namespace Repository.Migrations
 {
     [DbContext(typeof(StoreDbContext))]
-    [Migration("20240716180846_RemovePaymentIntentIdFromOrderTable")]
-    partial class RemovePaymentIntentIdFromOrderTable
+    [Migration("20240717085829_addClientSecretColumnToOrder")]
+    partial class addClientSecretColumnToOrder
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -56,12 +56,20 @@ namespace Repository.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<string>("ClienSecret")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("CustomerId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("PaymentIntentId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PaymentMethod")
                         .IsRequired()

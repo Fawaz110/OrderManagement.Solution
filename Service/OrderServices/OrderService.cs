@@ -72,7 +72,6 @@ namespace Service.OrderServices
             else if (total > 100)
                 total = total * 0.95m;
 
-
             // 3. Add & SaveChanges
 
             var order = new Order
@@ -81,7 +80,7 @@ namespace Service.OrderServices
                 Items = itemsToAdd,
                 PaymentMethod = paymentMethod,
                 Status = status,
-                TotalAmount = total,
+                TotalAmount = total, 
             };
 
             await _orderRepository.AddAsync(order);
