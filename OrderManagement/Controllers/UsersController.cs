@@ -88,11 +88,11 @@ namespace OrderManagement.Controllers
             });
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpGet("current")]
         public async Task<ActionResult<UserDto>> GetUser()
         {
-            var email = User.FindFirstValue("email");
+            var email = User.FindFirstValue(ClaimTypes.Email);
             var user = await _userManager.FindByEmailAsync(email);
 
             return Ok(new UserDto

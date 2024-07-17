@@ -12,15 +12,18 @@ namespace Service
         private readonly IConfiguration _configuration;
         private readonly IGenericRepository<Order> _orderRepository;
         private readonly IGenericRepository<Entities.Product> _productRepository;
+        private readonly IGenericRepository<Entities.Invoice> _invoiceRepository;
 
         public PaymentService(
             IConfiguration configuration,
             IGenericRepository<Order> orderRepository,
-            IGenericRepository<Entities.Product> productRepository)
+            IGenericRepository<Entities.Product> productRepository,
+            IGenericRepository<Entities.Invoice> invoiceRepository)
         {
             _configuration = configuration;
             _orderRepository = orderRepository;
             _productRepository = productRepository;
+            _invoiceRepository = invoiceRepository;
         }
         public async Task<Order> CreateOrUpdatePaymentIntent(int orderId)
         {
@@ -98,7 +101,17 @@ namespace Service
             var order = await _orderRepository.GetWithSpecAsync(spec);
 
             if (succeeded)
+            {
                 order.Status = OrderStatus.PaymentSucceded;
+
+                var invoice = new Entities.Invoice
+                {
+                    OrderId = order.Id,
+                    TotalAmount = order.TotalAmount
+                };
+
+                await _invoiceRepository.AddAsync(invoice);
+            }
             else
                 order.Status = OrderStatus.PaymentFailed;
 

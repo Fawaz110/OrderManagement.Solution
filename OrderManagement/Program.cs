@@ -36,7 +36,6 @@ namespace OrderManagement
                 });
 
             builder.Services.AddIdentityService(builder.Configuration);
-            
             #endregion
 
             builder.Services.AddServices();

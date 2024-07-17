@@ -26,14 +26,14 @@ namespace Service
             // Private Claims [depends on User]
             var authClaims = new List<Claim>
             {
-                new Claim("name", user.Name),
-                new Claim("email", user.Email),
+                new Claim(ClaimTypes.Name, user.Name),
+                new Claim(ClaimTypes.Email, user.Email),
             };
 
             var userRoles = await userManager.GetRolesAsync(user);
 
             foreach (var role in userRoles)
-                authClaims.Add(new Claim("role", role));
+                authClaims.Add(new Claim(ClaimTypes.Role, role));
 
             var authKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:SecretKey"]));
 
