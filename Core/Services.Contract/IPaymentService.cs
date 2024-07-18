@@ -10,6 +10,6 @@ namespace Core.Services.Contract
     public interface IPaymentService
     {
         Task<Order> CreateOrUpdatePaymentIntent(int orderId);
-        Task<Order> UpdatePaymentIntentStatus(string paymentIntentId, bool succeeded);
+        Task<Order> UpdateOrderStatus(string paymentIntentId, bool succeeded);
     }
 }

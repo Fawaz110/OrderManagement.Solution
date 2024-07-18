@@ -89,6 +89,16 @@ namespace Service.OrderServices
 
             var result = await _unitOfWork.CompleteAsync();
 
+            var invoice = new Invoice
+            {
+                OrderId = order.Id,
+                TotalAmount = order.TotalAmount
+            };
+
+            await _unitOfWork.Repository<Invoice>().AddAsync(invoice);
+
+            result = await _unitOfWork.CompleteAsync();
+
             if (result <= 0)
                 return null;
 

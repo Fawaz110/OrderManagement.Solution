@@ -82,7 +82,7 @@ namespace UnitTesting
             _mockUnitOfWork.Setup(r => r.Repository<Order>().GetWithSpecAsync(It.IsAny<OrderWithPaymentIntentIdSpecifications>())).ReturnsAsync(order);
 
             // Act
-            var result = await _paymentService.UpdatePaymentIntentStatus(paymentIntentId, false);
+            var result = await _paymentService.UpdateOrderStatus(paymentIntentId, false);
 
             // Assert
             Assert.NotNull(result);

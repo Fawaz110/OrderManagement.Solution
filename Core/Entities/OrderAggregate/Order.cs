@@ -10,8 +10,8 @@ namespace Core.Entities.Order.Aggregate
         public decimal TotalAmount { get; set; }
         public OrderStatus Status { get; set; }
         public PaymentMethod PaymentMethod { get; set; }
-        public string PaymentIntentId { get; set; }
-        public string ClienSecret { get; set; }
+        public string PaymentIntentId { get; set; } = string.Empty;
+        public string ClienSecret { get; set; } = string.Empty;
         public ICollection<OrderItem> Items { get; set; } = new HashSet<OrderItem>();
     }
 }

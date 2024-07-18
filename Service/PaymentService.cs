@@ -89,7 +89,7 @@ namespace Service
             return order;
         }
 
-        public async Task<Order> UpdatePaymentIntentStatus(string paymentIntentId, bool succeeded)
+        public async Task<Order> UpdateOrderStatus(string paymentIntentId, bool succeeded)
         {
             var spec = new OrderWithPaymentIntentIdSpecifications(paymentIntentId);
 
@@ -99,13 +99,12 @@ namespace Service
             {
                 order.Status = OrderStatus.PaymentSucceded;
 
-                var invoice = new Entities.Invoice
-                {
-                    OrderId = order.Id,
-                    TotalAmount = order.TotalAmount
-                };
-                if(invoice != null)
-                    await _unitOfWork.Repository<Entities.Invoice>().AddAsync(invoice);
+                //var invoice = new Entities.Invoice
+                //{
+                //    OrderId = order.Id,
+                //    TotalAmount = order.TotalAmount
+                //};
+                //await _unitOfWork.Repository<Entities.Invoice>().AddAsync(invoice);
             }
             else
                 order.Status = OrderStatus.PaymentFailed;

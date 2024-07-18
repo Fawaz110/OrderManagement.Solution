@@ -56,13 +56,13 @@ namespace OrderManagement.Controllers
                 switch (stripeEvent.Type)
                 {
                     case Events.PaymentIntentSucceeded:
-                        order = await _paymentService.UpdatePaymentIntentStatus(paymentIntent.Id, true);
+                        order = await _paymentService.UpdateOrderStatus(paymentIntent.Id, true);
                         _logger.LogWarning("Status SUcceeded: ", order.PaymentIntentId);
                         customer = await _userManager.FindByIdAsync(order.CustomerId);
                         EmailSettings.SendEmail(customer.Email, "Change in order status - Order Mnagament", order);
                         break;
                     case Events.PaymentIntentPaymentFailed: 
-                        order = await _paymentService.UpdatePaymentIntentStatus(paymentIntent.Id, false);
+                        order = await _paymentService.UpdateOrderStatus(paymentIntent.Id, false);
                         customer = await _userManager.FindByIdAsync(order.CustomerId);
                         EmailSettings.SendEmail(customer.Email, "Change in order status - Order Mnagament", order);
                         _logger.LogWarning("Status Failed: ", order.PaymentIntentId);

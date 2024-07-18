@@ -41,7 +41,7 @@ namespace OrderManagement.Controllers
             if (!isCustomer)
                 return BadRequest(new ApiResponse(400));
 
-            var items = _mapper.Map<List<OrderItem>>(model.Items);
+            var items = model.Items.Select(x => new OrderItem { Product = x.Product, Quantity = x.Quantity, UnitPrice = x.UnitPrice }).ToList();
 
             var order = await _orderService.CreateOrderAsync(model.buyerEmail, items, model.PaymentMethod, model.OrderStatus);
 
