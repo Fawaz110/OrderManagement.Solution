@@ -135,7 +135,7 @@ namespace Service.OrderServices
 
             _unitOfWork.Repository<Order>().Update(order);
 
-            var result = await _unitOfWork.Repository<Order>().CompleteAsync();
+            var result = await _unitOfWork.CompleteAsync();
 
             if (result <= 0)
                 return null;

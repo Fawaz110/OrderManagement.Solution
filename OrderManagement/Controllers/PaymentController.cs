@@ -1,7 +1,5 @@
 ﻿using Core.Entities.Order.Aggregate;
-using Core.Repositories.Contract;
 using Core.Services.Contract;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using OrderManagement.Entities;
@@ -68,6 +66,7 @@ namespace OrderManagement.Controllers
                         customer = await _userManager.FindByIdAsync(order.CustomerId);
                         EmailSettings.SendEmail(customer.Email, "Change in order status - Order Mnagament", order);
                         _logger.LogWarning("Status Failed: ", order.PaymentIntentId);
+                        
                     break;
                     default:
                         Console.WriteLine("Unhandled event type: {0}", stripeEvent.Type);

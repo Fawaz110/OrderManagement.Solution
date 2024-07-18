@@ -58,7 +58,7 @@ namespace OrderManagement.Controllers
 
             await _unitOfWork.Repository<Product>().AddAsync(product);
 
-            var result = await _unitOfWork.Repository<Product>().CompleteAsync();
+            var result = await _unitOfWork.CompleteAsync();
 
             if (result <= 0)
                 return BadRequest(new ApiResponse(400));
@@ -83,7 +83,7 @@ namespace OrderManagement.Controllers
 
             _unitOfWork.Repository<Product>().Update(product);
 
-            var result = await _unitOfWork.Repository<Product>().CompleteAsync();
+            var result = await _unitOfWork.CompleteAsync();
 
             if (result <= 0)
                 return (new ApiResponse(400, "error occured during update item"));

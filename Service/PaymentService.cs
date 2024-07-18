@@ -2,6 +2,7 @@
 using Core.Repositories.Contract;
 using Core.Services.Contract;
 using Core.Specifications.OrderSpeicifcations;
+using Core.UnitsOfWork;
 using Microsoft.Extensions.Configuration;
 using Stripe;
 using Entities = Core.Entities;
@@ -10,20 +11,14 @@ namespace Service
     public class PaymentService : IPaymentService
     {
         private readonly IConfiguration _configuration;
-        private readonly IGenericRepository<Order> _orderRepository;
-        private readonly IGenericRepository<Entities.Product> _productRepository;
-        private readonly IGenericRepository<Entities.Invoice> _invoiceRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
         public PaymentService(
             IConfiguration configuration,
-            IGenericRepository<Order> orderRepository,
-            IGenericRepository<Entities.Product> productRepository,
-            IGenericRepository<Entities.Invoice> invoiceRepository)
+            IUnitOfWork unitOfWork)
         {
             _configuration = configuration;
-            _orderRepository = orderRepository;
-            _productRepository = productRepository;
-            _invoiceRepository = invoiceRepository;
+            _unitOfWork = unitOfWork;
         }
         public async Task<Order> CreateOrUpdatePaymentIntent(int orderId)
         {
@@ -31,7 +26,7 @@ namespace Service
 
             var spec = new OrderWithItemsSpeicifcations(orderId);
 
-            var order = await _orderRepository.GetWithSpecAsync(spec);
+            var order = await _unitOfWork.Repository<Order>().GetWithSpecAsync(spec);
 
             if (order is null) return null;
 
@@ -39,7 +34,7 @@ namespace Service
             {
                 foreach (var item in order?.Items)
                 {
-                    var product = await _productRepository.GetByIdAsync(item.Product.ProductId);
+                    var product = await _unitOfWork.Repository<Entities.Product>().GetByIdAsync(item.Product.ProductId);
 
                     if(product.Price != item.UnitPrice)
                         item.UnitPrice = product.Price;
@@ -87,9 +82,9 @@ namespace Service
                 await paymentIntentService.UpdateAsync(order.PaymentIntentId, options);
             }// Update Payment Intent
 
-            _orderRepository.Update(order);
+            _unitOfWork.Repository<Order>().Update(order);
 
-            await _orderRepository.CompleteAsync();
+            await _unitOfWork.CompleteAsync();
 
             return order;
         }
@@ -98,7 +93,7 @@ namespace Service
         {
             var spec = new OrderWithPaymentIntentIdSpecifications(paymentIntentId);
 
-            var order = await _orderRepository.GetWithSpecAsync(spec);
+            var order = await _unitOfWork.Repository<Order>().GetWithSpecAsync(spec);
 
             if (succeeded)
             {
@@ -109,15 +104,15 @@ namespace Service
                     OrderId = order.Id,
                     TotalAmount = order.TotalAmount
                 };
-
-                await _invoiceRepository.AddAsync(invoice);
+                if(invoice != null)
+                    await _unitOfWork.Repository<Entities.Invoice>().AddAsync(invoice);
             }
             else
                 order.Status = OrderStatus.PaymentFailed;
 
-            _orderRepository.Update(order);
+            _unitOfWork.Repository<Order>().Update(order);
 
-            await _orderRepository.CompleteAsync();
+            await _unitOfWork.CompleteAsync();
 
             return order;
         }

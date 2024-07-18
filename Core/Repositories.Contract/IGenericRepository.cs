@@ -17,7 +17,5 @@ namespace Core.Repositories.Contract
         Task<IEnumerable<TEntity>> GetAllWithSpecAsync(ISpecifications<TEntity> spec);
         Task<TEntity> GetByIdAsync(int id);
         Task<TEntity> GetWithSpecAsync(ISpecifications<TEntity> spec);
-        Task<int> CompleteAsync();
-
     }
 }

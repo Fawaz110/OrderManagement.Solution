@@ -18,9 +18,6 @@ namespace Repository
         public async Task AddAsync(TEntity entity)
             => await _context.Set<TEntity>().AddAsync(entity);
 
-        public async Task<int> CompleteAsync()
-            => await _context.SaveChangesAsync();
-
         public void Delete(TEntity entity)
             => _context.Set<TEntity>().Remove(entity);
 

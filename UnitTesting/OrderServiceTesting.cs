@@ -127,5 +127,36 @@ namespace UnitTesting
             product1.Stock.Should().Be(8); // 10 - 2
             product2.Stock.Should().Be(4); // 5 - 1
         }
+
+        [Theory]
+        [InlineData(210, 189)]  // 10% discount
+        [InlineData(150, 142.5)] // 5% discount
+        [InlineData(90, 90)]     // No discount
+        public async Task CreateOrderAsync_AppliesDiscountsCorrectly(decimal initialTotal, decimal expectedTotal)
+        {
+            // Arrange
+            string buyerEmail = "mustafa.customer@store.com";
+            var user = new AppUser { Id = "1", Email = buyerEmail };
+            List<OrderItem> orderItems = new List<OrderItem>
+            {
+                new OrderItem { Product = new ProductOrderItem { ProductId = 1 }, Quantity = 1 }
+            };
+            PaymentMethod paymentMethod = new PaymentMethod();
+            OrderStatus status = new OrderStatus();
+
+            var product = new Product { Id = 1, Name = "Product1", Price = initialTotal, Stock = 10 };
+
+            _mockUserManager.Setup(u => u.FindByEmailAsync(buyerEmail)).ReturnsAsync(user);
+            _mockUnitOfWork.Setup(u => u.Repository<Product>().GetByIdAsync(It.IsAny<int>())).ReturnsAsync(product);
+            _mockUnitOfWork.Setup(u => u.Repository<Order>().AddAsync(It.IsAny<Order>())).Returns(Task.CompletedTask);
+            _mockUnitOfWork.Setup(u => u.CompleteAsync()).ReturnsAsync(1);
+
+            // Act
+            var result = await _orderService.CreateOrderAsync(buyerEmail, orderItems, paymentMethod, status);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.TotalAmount.Should().Be(expectedTotal);
+        }
     }
 }
