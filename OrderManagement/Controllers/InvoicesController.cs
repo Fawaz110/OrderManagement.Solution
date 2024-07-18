@@ -1,20 +1,22 @@
 ﻿using Core.Entities;
 using Core.Repositories.Contract;
 using Core.Specifications.InvoiceSpecifications;
+using Core.UnitsOfWork;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OrderManagement.Errors;
 
 namespace OrderManagement.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class InvoicesController : BaseApiController
     {
-        private readonly IGenericRepository<Invoice> _invoiceRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public InvoicesController(
-            IGenericRepository<Invoice> invoiceRepository)
+        public InvoicesController(IUnitOfWork unitOfWork)
         {
-            _invoiceRepository = invoiceRepository;
+            _unitOfWork = unitOfWork;
         }
 
         [HttpGet("{invoiceId}")]
@@ -22,7 +24,7 @@ namespace OrderManagement.Controllers
         {
             var spec = new InvoiceWithOrderSpecifications(invoiceId);
 
-            var invoice = await _invoiceRepository.GetWithSpecAsync(spec);
+            var invoice = await _unitOfWork.Repository<Invoice>().GetWithSpecAsync(spec);
 
             if (invoice is null)
                 return NotFound(new ApiResponse(404));
@@ -35,7 +37,7 @@ namespace OrderManagement.Controllers
         {
             var spec = new InvoiceWithOrderSpecifications();
 
-            var invoices = await _invoiceRepository.GetAllWithSpecAsync(spec);
+            var invoices = await _unitOfWork.Repository<Invoice>().GetAllWithSpecAsync(spec);
 
             if (!invoices.Any())
                 return NotFound(new ApiResponse(404));

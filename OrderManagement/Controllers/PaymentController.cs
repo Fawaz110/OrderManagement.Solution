@@ -2,8 +2,11 @@
 using Core.Repositories.Contract;
 using Core.Services.Contract;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using OrderManagement.Entities;
 using OrderManagement.Errors;
+using OrderManagement.Helper;
 using Stripe;
 
 namespace OrderManagement.Controllers
@@ -12,14 +15,17 @@ namespace OrderManagement.Controllers
     {
         private readonly IPaymentService _paymentService;
         private readonly ILogger<PaymentController> _logger;
+        private readonly UserManager<AppUser> _userManager;
         private const string _whSecret = "whsec_6f90552d7e57bd2b37c4a24f189239b8faf5d48d72cbd2f2dfa40db84a8bbbc7";
 
         public PaymentController(
             IPaymentService paymentService,
-            ILogger<PaymentController> logger)
+            ILogger<PaymentController> logger,
+            UserManager<AppUser> userManager)
         {
             _paymentService = paymentService;
             _logger = logger;
+            _userManager = userManager;
         }
 
         [ProducesResponseType(typeof(Order), StatusCodes.Status200OK)]
@@ -47,15 +53,20 @@ namespace OrderManagement.Controllers
                 var paymentIntent = (PaymentIntent)stripeEvent.Data.Object;
 
                 Order order;
+                AppUser customer;
 
                 switch (stripeEvent.Type)
                 {
                     case Events.PaymentIntentSucceeded:
                         order = await _paymentService.UpdatePaymentIntentStatus(paymentIntent.Id, true);
                         _logger.LogWarning("Status SUcceeded: ", order.PaymentIntentId);
+                        customer = await _userManager.FindByIdAsync(order.CustomerId);
+                        EmailSettings.SendEmail(customer.Email, "Change in order status - Order Mnagament", order);
                         break;
                     case Events.PaymentIntentPaymentFailed: 
                         order = await _paymentService.UpdatePaymentIntentStatus(paymentIntent.Id, false);
+                        customer = await _userManager.FindByIdAsync(order.CustomerId);
+                        EmailSettings.SendEmail(customer.Email, "Change in order status - Order Mnagament", order);
                         _logger.LogWarning("Status Failed: ", order.PaymentIntentId);
                     break;
                     default:

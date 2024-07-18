@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using Core.Entities;
 using Core.Repositories.Contract;
+using Core.UnitsOfWork;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrderManagement.Errors;
 using Service.Dtos;
@@ -9,14 +11,14 @@ namespace OrderManagement.Controllers
 {
     public class ProductsController : BaseApiController
     {
-        private readonly IGenericRepository<Product> _genericRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
         public ProductsController(
-            IGenericRepository<Product> genericRepository,
+            IUnitOfWork unitOfWork,
             IMapper mapper)
         {
-            _genericRepository = genericRepository;
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
@@ -25,7 +27,7 @@ namespace OrderManagement.Controllers
         [HttpGet] // GET: /api/products
         public async Task<ActionResult<IEnumerable<Product>>> GetAll()
         {
-            var result = await _genericRepository.GetAllAsync();
+            var result = await _unitOfWork.Repository<Product>().GetAllAsync();
 
             if (!result.Any())
                 return NotFound(new ApiResponse(404));
@@ -38,7 +40,7 @@ namespace OrderManagement.Controllers
         [HttpGet("{productId}")] // GET: /api/products/{productId}
         public async Task<ActionResult<Product>> GetById(int productId)
         {
-            var product = await _genericRepository.GetByIdAsync(productId);
+            var product = await _unitOfWork.Repository<Product>().GetByIdAsync(productId);
 
             if (product is null)
                 return NotFound(new ApiResponse(404));
@@ -46,6 +48,7 @@ namespace OrderManagement.Controllers
             return Ok(product);
         }
 
+        [Authorize(Roles = "Admin")]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
         [HttpPost] // POST: /api/products
@@ -53,9 +56,9 @@ namespace OrderManagement.Controllers
         {
             var product = _mapper.Map<Product>(model);
 
-            await _genericRepository.AddAsync(product);
+            await _unitOfWork.Repository<Product>().AddAsync(product);
 
-            var result = await _genericRepository.CompleteAsync();
+            var result = await _unitOfWork.Repository<Product>().CompleteAsync();
 
             if (result <= 0)
                 return BadRequest(new ApiResponse(400));
@@ -63,12 +66,13 @@ namespace OrderManagement.Controllers
             return Ok(new ApiResponse(200));
         }
 
+        [Authorize(Roles = "Admin")]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
         [HttpPut("{productId}")] // PUT: /api/products/{productId}
         public async Task<ActionResult<ApiResponse>> UpdateProduct(int productId, [FromBody] ProductDto model)
         {
-            var product = await _genericRepository.GetByIdAsync(productId);
+            var product = await _unitOfWork.Repository<Product>().GetByIdAsync(productId);
 
             if (product is null)
                 return BadRequest(new ApiResponse(400));
@@ -77,9 +81,9 @@ namespace OrderManagement.Controllers
             product.Price = model.Price;
             product.Name = model.Name;
 
-            _genericRepository.Update(product);
+            _unitOfWork.Repository<Product>().Update(product);
 
-            var result = await _genericRepository.CompleteAsync();
+            var result = await _unitOfWork.Repository<Product>().CompleteAsync();
 
             if (result <= 0)
                 return (new ApiResponse(400, "error occured during update item"));

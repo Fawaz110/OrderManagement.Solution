@@ -1,29 +1,25 @@
 ﻿using Core.Entities.Order.Aggregate;
 using Core.Services.Contract;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using OrderManagement.Dtos;
 using OrderManagement.Entities;
 using OrderManagement.Errors;
+using Service.Dtos;
 
 namespace OrderManagement.Controllers
 {
     public class CustomersController : BaseApiController
     {
         private readonly UserManager<AppUser> _userManager;
-        private readonly SignInManager<AppUser> _signInManager;
         private readonly IAuthService _authService;
         private readonly IOrderService _orderService;
 
         public CustomersController(
             UserManager<AppUser> userManager,
-            SignInManager<AppUser> signInManager,
             IAuthService authService,
             IOrderService orderService)
         {
             _userManager = userManager;
-            _signInManager = signInManager;
             _authService = authService;
             _orderService = orderService;
         }

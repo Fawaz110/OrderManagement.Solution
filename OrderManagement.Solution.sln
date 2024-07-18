@@ -3,13 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33723.286
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderManagement", "OrderManagement\OrderManagement.csproj", "{0CD369F5-AEF7-421E-A6AE-CD81748286B0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderManagement", "OrderManagement\OrderManagement.csproj", "{0CD369F5-AEF7-421E-A6AE-CD81748286B0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", "{C5862F74-EA3D-4BC2-9397-1693FF763989}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core", "Core\Core.csproj", "{C5862F74-EA3D-4BC2-9397-1693FF763989}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Repository", "Repository\Repository.csproj", "{270E45EA-AFC8-41CD-9A0B-75383EF35A23}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Repository", "Repository\Repository.csproj", "{270E45EA-AFC8-41CD-9A0B-75383EF35A23}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Service", "Service\Service.csproj", "{4A1B987A-2B85-43A1-A164-52D4EFFF7E6E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Service", "Service\Service.csproj", "{4A1B987A-2B85-43A1-A164-52D4EFFF7E6E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTesting", "UnitTesting\UnitTesting.csproj", "{0E529C03-7EBF-4E55-9F3D-F122506FD459}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{4A1B987A-2B85-43A1-A164-52D4EFFF7E6E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4A1B987A-2B85-43A1-A164-52D4EFFF7E6E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4A1B987A-2B85-43A1-A164-52D4EFFF7E6E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0E529C03-7EBF-4E55-9F3D-F122506FD459}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E529C03-7EBF-4E55-9F3D-F122506FD459}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E529C03-7EBF-4E55-9F3D-F122506FD459}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E529C03-7EBF-4E55-9F3D-F122506FD459}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

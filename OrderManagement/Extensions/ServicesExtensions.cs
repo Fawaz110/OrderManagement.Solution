@@ -1,5 +1,6 @@
 ﻿using Core.Repositories.Contract;
 using Core.Services.Contract;
+using Core.UnitsOfWork;
 using OrderManagement.Entities;
 using Repository;
 using Service;
@@ -16,6 +17,7 @@ namespace OrderManagement.Extensions
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<IPaymentService, PaymentService>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             services.AddAutoMapper(x => x.AddProfile(new ProductProfile()));
 

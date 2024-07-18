@@ -2,10 +2,12 @@
 using Core.Entities.Order.Aggregate;
 using Core.Services.Contract;
 using Core.Specifications.OrderSpeicifcations;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using OrderManagement.Entities;
 using OrderManagement.Errors;
+using OrderManagement.Helper;
 using Service.Dtos.OrderDtos;
 
 namespace OrderManagement.Controllers
@@ -49,6 +51,7 @@ namespace OrderManagement.Controllers
             return Ok(order);
         }
 
+        [Authorize(Roles = "Admin")]
         [ProducesResponseType(typeof(IEnumerable<Order>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)]
         [HttpGet] // GET: /api/orders
@@ -79,6 +82,7 @@ namespace OrderManagement.Controllers
             return Ok(order);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPut("{orderId}/status")] // PUT: /api/orders/{orderId}/status
         public async Task<ActionResult<ApiResponse>> UpdateStatus(int orderId, OrderStatus? status = null)
         {
@@ -95,6 +99,10 @@ namespace OrderManagement.Controllers
 
             if (order is null)
                 return BadRequest(new ApiResponse(400));
+
+            var customer = await _userManager.FindByIdAsync(order.CustomerId);
+
+            EmailSettings.SendEmail(customer.Email, "Change in order status - Order Mnagament", order);
 
             return Ok(order);
         }

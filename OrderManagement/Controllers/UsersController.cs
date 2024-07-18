@@ -1,9 +1,7 @@
 ﻿using Core.Services.Contract;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using OrderManagement.Dtos;
 using OrderManagement.Entities;
 using OrderManagement.Errors;
 using Service.Dtos;

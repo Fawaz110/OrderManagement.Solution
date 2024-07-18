@@ -9,25 +9,29 @@ using OrderManagement.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mail;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+using Core.UnitsOfWork;
 
 namespace Service.OrderServices
 {
     public class OrderService : IOrderService
     {
-        private readonly IGenericRepository<Order> _orderRepository;
-        private readonly IGenericRepository<Product> _productRepository;
         private readonly UserManager<AppUser> _userManager;
+        private readonly IConfiguration _configuration;
+        private readonly IUnitOfWork _unitOfWork;
 
         public OrderService(
-            IGenericRepository<Order> orderRepository,
-            IGenericRepository<Product> productRepository,
-            UserManager<AppUser> userManager) 
+            UserManager<AppUser> userManager,
+            IConfiguration configuration,
+            IUnitOfWork unitOfWork) 
         {
-            _orderRepository = orderRepository;
-            _productRepository = productRepository;
             _userManager = userManager;
+            _configuration = configuration;
+            _unitOfWork = unitOfWork;
         }
         public async Task<Order> CreateOrderAsync(string buyerEmail, List<OrderItem> orderItems, PaymentMethod paymentMethod, OrderStatus status)
         {
@@ -45,7 +49,7 @@ namespace Service.OrderServices
             {
                 foreach (var item in orderItems)
                 {
-                    var product = await _productRepository.GetByIdAsync(item.Product.ProductId);
+                    var product = await _unitOfWork.Repository<Product>().GetByIdAsync(item.Product.ProductId);
 
                     if(product is not null && product.Stock >= item.Quantity)
                     {
@@ -81,9 +85,9 @@ namespace Service.OrderServices
                 TotalAmount = total, 
             };
 
-            await _orderRepository.AddAsync(order);
+            await _unitOfWork.Repository<Order>().AddAsync(order);
 
-            var result = await _orderRepository.CompleteAsync();
+            var result = await _unitOfWork.CompleteAsync();
 
             if (result <= 0)
                 return null;
@@ -97,13 +101,13 @@ namespace Service.OrderServices
         }
 
         public async Task<IEnumerable<Order>> GetAllAsync()
-            => await _orderRepository.GetAllAsync();
+            => await _unitOfWork.Repository<Order>().GetAllAsync();
 
         public async Task<IEnumerable<Order>> GetAllOrdersForUserAsync(string customerId)
         {
             var spec = new OrderWithItemsSpeicifcations();
 
-            var result = await _orderRepository.GetAllWithSpecAsync(spec);
+            var result = await _unitOfWork.Repository<Order>().GetAllWithSpecAsync(spec);
 
             var orders = result.Where(O => O.CustomerId == customerId).ToList();
 
@@ -111,17 +115,17 @@ namespace Service.OrderServices
         }
 
         public async Task<IEnumerable<Order>> GetAllWithSpecAsync(OrderWithItemsSpeicifcations spec)
-            => await _orderRepository.GetAllWithSpecAsync(spec);
+            => await _unitOfWork.Repository<Order>().GetAllWithSpecAsync(spec);
 
         public async Task<Order> GetByIdAsync(int id)
-            => await _orderRepository.GetByIdAsync(id);
+            => await _unitOfWork.Repository<Order>().GetByIdAsync(id);
 
         public async Task<Order> GetWithSpecAsync(OrderWithItemsSpeicifcations spec)
-            => await _orderRepository.GetWithSpecAsync(spec);
+            => await _unitOfWork.Repository<Order>().GetWithSpecAsync(spec);
 
         public async Task<Order> UpdateStatusAsync(int orderId, OrderStatus status)
         {
-            var order = await _orderRepository.GetByIdAsync(orderId);
+            var order = await _unitOfWork.Repository<Order>().GetByIdAsync(orderId);
 
             if (order is null)
                 return null;
@@ -129,7 +133,9 @@ namespace Service.OrderServices
             if (order.Status != status)
                 order.Status = status;
 
-            var result = await _orderRepository.CompleteAsync();
+            _unitOfWork.Repository<Order>().Update(order);
+
+            var result = await _unitOfWork.Repository<Order>().CompleteAsync();
 
             if (result <= 0)
                 return null;
